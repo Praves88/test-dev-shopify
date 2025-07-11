@@ -1,0 +1,122 @@
+<!doctype html>
+
+<html lang="{{ request.locale.iso_code }}" dir="{% render 'direction' %}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, height=device-height, minimum-scale=1.0, maximum-scale=5.0">
+
+    <title>{% if page_title == blank %}{{ shop.name }}{% else %}{{ page_title }}{% if current_page != 1 %} &ndash; {{ 'general.page' | t: page: current_page }}{% endif %}{% endif %}</title>
+
+    {%- if page_description -%}
+      <meta name="description" content="{{ page_description | escape }}">
+    {%- endif -%}
+
+    <link rel="canonical" href="{{ canonical_url }}">
+
+    {%- if settings.favicon -%}
+      <link rel="shortcut icon" href="{{ settings.favicon | image_url: width: 96 }}">
+      <link rel="apple-touch-icon" href="{{ settings.favicon | image_url: width: 180 }}">
+    {%- endif -%}
+{%- render 'social-meta-tags' -%}
+<link rel="preload" href="{{ 'theme.css' | asset_url }}" as="style">
+<link rel="preload" as="style" media="screen" href="https://wolfpak.com/cdn/shopifycloud/portable-wallets/latest/accelerated-checkout-backwards-compat.css" crossorigin="anonymous">
+<link rel="preload" as="style" media="screen" href="https://w8w8oairsmgt0uk6-50912329900.shopifypreview.com/cdn/shopifycloud/portable-wallets/latest/accelerated-checkout-backwards-compat.css" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.shopify.com/extensions/b7827d35-7f67-495d-9272-1dc17ea34db4/keepcart-stop-coupon-leaks-120/assets/app.css" as="style">
+<link rel="preload" href="https://static.klaviyo.com/onsite/js/klaviyo.js?company_id=XbQAuN&shop=wolfpak-backpacks.myshopify.com" as="script" />    
+<link rel="preload" href="https://shopify-init.blackcrow.ai/js/core/wolfpak-backpacks.js?shop=wolfpak-backpacks.myshopify.com&tagSrc=ShopifyThemeAppExtension" as="script" />    
+<link rel="preload" href="https://wolfpak.com/wpm@feecbecawfdfe1f43pf69f8c50m5e756bba/web-pixel-403800311@9a9ab8622c3c5b07abaaa56bf0d3b97d/sandbox/worker.modern.js" as="script" />    
+
+    {%- unless settings.heading_font.system? -%}
+      <link rel="preload" href="{{ settings.heading_font | font_url }}" as="font" type="font/woff2" crossorigin>
+    {%- endunless -%}
+
+    {%- unless settings.text_font.system? -%}
+      <link rel="preload" href="{{ settings.text_font | font_url }}" as="font" type="font/woff2" crossorigin>
+    {%- endunless -%}
+
+    {%- render 'microdata-schema' -%}
+    {%- render 'css-variables' -%}
+    {%- render 'js-variables' -%}
+
+    {%- if request.page_type == 'gift_card' -%}
+      <script src="{{ 'vendor/qrcode.js' | shopify_asset_url }}" defer></script>
+    {%- endif -%}
+
+<script src="{{ 'lazyload.js' | asset_url }}" async="async"></script>
+    <script type="importmap">
+      {%- comment -%}On Safari 16.3 and lower, a polyfill is used to load importmap{%- endcomment -%}
+      {
+        "imports": {
+          "vendor": "{{ 'vendor.min.js' | asset_url }}",
+          "theme": "{{ 'theme.js' | asset_url }}",
+          "photoswipe": "{{ 'photoswipe.min.js' | asset_url }}"
+        }
+      }
+    </script>
+
+    <script type="module" src="{{ 'vendor.min.js' | asset_url }}"></script>
+    <script type="module" src="{{ 'theme.js' | asset_url }}"></script>
+
+    {% if template != 'index' %}
+  {{ content_for_header }}
+{% else %}
+  {{ content_for_header | remove: ',"https:\/\/sdks.automizely.com\/recommendations\/v1\/pz-recommendations.umd.js?connection_id=83a2bd5183cc4c7ea255e001e1eda957_v1\u0026org_id=c5c2ab28f301984529cd1b6a50c83015_v1\u0026app_key=wolfpak-backpacks\u0026app_name=personalization\u0026shop=wolfpak-backpacks.myshopify.com"' }}
+{% endif %}
+
+    {{- 'theme.css' | asset_url | stylesheet_tag -}}
+    {% render 'scripts' %}
+  </head>
+
+  {% liquid
+    assign features_class = ''
+
+    if settings.image_hover_animation == 'zoom'
+      assign features_class = features_class | append: 'features--zoom-image '
+    elsif settings.image_hover_animation == 'zoom_filter'
+      assign features_class = features_class | append: 'features--zoom-filter-image '
+    endif
+  %}
+
+  <body class="{{ features_class }}">
+    {%- render 'shadow-dom-templates' -%}
+
+    <loading-bar class="loading-bar" aria-hidden="true"></loading-bar>
+
+    <a href="#main" allow-hash-change class="skip-to-content sr-only">{{ 'general.accessibility.skip_to_content' | t }}</a>
+
+    <span id="header-scroll-tracker" style="position: absolute; width: 1px; height: 1px; top: 200px; left: 0;">
+      {%- comment -%}
+        This allows our theme to track when the user has scrolled a given amount of pixels, without relying on a global scroll listener. This helps
+        to improve performance and reduce reflows.
+      {%- endcomment -%}
+    </span>
+    
+    {%- if request.page_type != 'password' -%}
+      {%- sections 'header-group' -%}
+      {%- sections 'overlay-group' -%}
+    {%- endif -%}
+
+    <main id="main" class="anchor">
+      {{ content_for_layout }}
+    </main>
+
+    {%- if request.page_type != 'password' -%}
+      {%- sections 'footer-group' -%}
+    {%- endif -%}
+
+    <x-toast class="toast">
+      {% comment %}Container for notification messages; DO NOT DELETE{% endcomment %}
+    </x-toast>
+
+<link rel="preload" href="{{ 'splide.min.js' | asset_url }}" as="script">
+<script src="{{ 'splide.min.js' | asset_url }}"></script>
+
+<style>
+  picture img, figure img {
+    height: 100%;
+    width: 100%;
+}
+</style>
+    
+  </body>
+</html>
